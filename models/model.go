@@ -1,25 +1,40 @@
 package model
 
+import "github.com/jinzhu/gorm"
+
+type User struct {
+	gorm.Model
+	Name      string
+	Email     string
+	Texts     []Text
+	Fragments []Fragment
+	Links     []Link
+}
+
 type Text struct {
-	ID      uint
-	Title   string
-	Body    string
-	Source  EntryType
-	Locator string
+	gorm.Model
+	Title     string
+	Body      string
+	Source    EntryType
+	Locator   string
+	UserID    uint
+	Fragments []Fragment
 }
 
 type Fragment struct {
-	ID         uint
-	Body       string
-	ParentText Text
-	ParentId   uint
-	Link       []Link
+	gorm.Model
+	Body   string
+	TextID uint
+	Link   []*Link `gorm:"many2many:fragment_links"`
+	UserID uint
 }
 
 type Link struct {
-	ID        uint
+	gorm.Model
 	Name      string
-	Relations []Link
+	Relations []Link      `gorm:"many2many:link_relations;association_jointable_foreignkey:relation_id"`
+	Fragments []*Fragment `gorm:"many2many:fragment_links"`
+	UserID    uint
 }
 
 type EntryType int

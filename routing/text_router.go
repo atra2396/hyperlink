@@ -7,16 +7,22 @@ import (
 
 	model "github.com/atra2396/hyperlink/models"
 	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 )
 
-var texts []model.Text
+var db gorm.DB
+
+func InitDbConnection(database gorm.DB) {
+	db = database
+}
 
 func CreateText(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var newText model.Text
 	_ = json.NewDecoder(r.Body).Decode(&newText)
-	newText.ID = uint(len(texts))
-	texts = append(texts, newText)
+
+	db.Create(&newText)
+
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(newText)
 }
@@ -32,15 +38,8 @@ func GetText(w http.ResponseWriter, r *http.Request) {
 
 	castedId := uint(givenId)
 
-	for _, val := range texts {
-		if val.ID == castedId {
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(val)
-			return
-		}
-	}
+	var text model.Text
+	db.Where("id = ?", castedId).First(&text)
 
-	w.WriteHeader(http.StatusNotFound)
-	w.Write([]byte("id could not be found"))
-	return
+	json.NewEncoder(w).Encode(text)
 }
