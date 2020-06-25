@@ -40,6 +40,11 @@ func GetText(w http.ResponseWriter, r *http.Request) {
 
 	var text model.Text
 	db.Where("id = ?", castedId).First(&text)
+	if text.ID == 0 {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("id not found"))
+		return
+	}
 
 	json.NewEncoder(w).Encode(text)
 }

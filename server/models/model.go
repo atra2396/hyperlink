@@ -4,11 +4,12 @@ import "github.com/jinzhu/gorm"
 
 type User struct {
 	gorm.Model
-	Name      string
-	Email     string
-	Texts     []Text
-	Fragments []Fragment
-	Links     []Link
+	Name         string
+	PasswordHash string
+	Email        string
+	Texts        []Text
+	Fragments    []Fragment
+	Links        []Link
 }
 
 type Text struct {
