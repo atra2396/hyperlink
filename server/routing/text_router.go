@@ -39,8 +39,8 @@ func GetText(w http.ResponseWriter, r *http.Request) {
 	castedId := uint(givenId)
 
 	var text model.Text
-	db.Where("id = ?", castedId).First(&text)
-	if text.ID == 0 {
+
+	if db.Where("id = ?", castedId).First(&text).RecordNotFound() {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("id not found"))
 		return

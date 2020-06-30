@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/atra2396/hyperlink/auth"
 	model "github.com/atra2396/hyperlink/models"
 	"github.com/atra2396/hyperlink/routing"
 	"github.com/gorilla/mux"
@@ -20,10 +21,16 @@ func main() {
 	routing.InitDbConnection(db)
 
 	r := mux.NewRouter()
-	r.HandleFunc("/api/v1/text/{id}", routing.GetText).Methods("GET")
-	r.HandleFunc("/api/v1/text", routing.CreateText).Methods("POST")
 
 	r.HandleFunc("/", greet).Methods("GET")
+	r.HandleFunc("/login/{username}/{password}", auth.Login).Methods("GET")
+
+	secure := r.PathPrefix("/auth").Subrouter()
+	secure.Use(auth.AuthenticationMiddleware)
+
+	secure.HandleFunc("/api/v1/text/{id}", routing.GetText).Methods("GET")
+	secure.HandleFunc("/api/v1/text", routing.CreateText).Methods("POST")
+	secure.HandleFunc("/", greet).Methods("GET")
 
 	fmt.Println("Starting server...")
 	log.Fatal(http.ListenAndServe(":8080", r))
