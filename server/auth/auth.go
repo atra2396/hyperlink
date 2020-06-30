@@ -67,6 +67,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		Name:    "token",
 		Value:   tokenString,
 		Expires: expirationTime,
+		Path:    "/",
 		Domain:  "",
 	})
 
